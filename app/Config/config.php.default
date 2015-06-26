@@ -17,14 +17,14 @@ Configure::write('PlatinMarket.Scope', '*:*');
 
 // ReformApi Location
 Configure::write('PlatinMarket.Api', array(
-  'protocol' => "http",
+  'protocol' => 'http',
   'host' => 'developer.platinmarket.com',
   'path' => '/reform'
 ));
 
 // OAuth Location
-Configure::write('PlatinMarket.Api', array(
-  'protocol' => "http",
+Configure::write('PlatinMarket.OAuth', array(
+  'protocol' => 'http',
   'host' => 'developer.platinmarket.com',
-  'path' => '/oauth'
+  'path' => '/oauth/authorize'
 ));

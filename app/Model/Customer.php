@@ -9,7 +9,6 @@ class Customer extends AppModel
 
   // HasMany Relation
   public $hasMany = array(
-    'AuthCode' => array('dependent' => true),
     'AccessToken' => array('dependent' => true),
     'RefreshToken' => array('dependent' => true)
   );

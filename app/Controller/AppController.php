@@ -1,6 +1,8 @@
 <?php
 
 App::uses('Controller', 'Controller');
+App::uses('CakeTime', 'Utility');
+App::uses('HttpSocket', 'Network/Http');
 
 class AppController extends Controller
 {
@@ -27,6 +29,22 @@ class AppController extends Controller
   // Before Filter
   public function beforeFilter()
   {
+    //Check If Session Start
+    if ($this->request->url == "session_start")
+    {
+      $this->Session->write('session_map.' . $this->session_id, "");
+      return $this->redirect($this->request->data['redirect_uri']);
+    }
+
+    // Check If Error
+    if ($this->name == 'CakeError') return;
+
+    // Init Config Data
+    $this->__init_config();
+
+    // Init Session Data
+    $this->__init_session();
+
     // Init Customer Data
     $this->__init_customer_data();
 
@@ -35,7 +53,7 @@ class AppController extends Controller
 
     // Check Customer Data
     if ($this->params->controller != "install" && (empty($this->customer_data) || $this->customer_data['Customer']['is_installed'] == 0))
-      return $this->redirect(array("plugin" => null, "controller" => "install", "action" => "index", "session_id" => null));
+      return $this->redirect(array("plugin" => null, "controller" => "install", "action" => "index", "session_id" => $this->session_id));
 
   }
 
@@ -50,16 +68,85 @@ class AppController extends Controller
       // Has RefreshToken?
       if ($refresh_token = $this->__has_token("RefreshToken", $this->customer_data['Customer']['id']))
       {
-        // Call Access Token
+        $this->loadModel('Customer');
 
+        // Get AccessToken from Refresh Token
+        // Set Action Url
+        $action = Configure::read('PlatinMarket.OAuth.protocol') . '://' . Configure::read('PlatinMarket.OAuth.host') . Configure::read('PlatinMarket.OAuth.path') . '/access_token.json';
+
+        // Prepare Data
+        $data = array(
+          'platform_uuid' => Configure::read('PlatinMarket.PlatformUUID'),
+          'customer_uuid' => $this->customer_data['Customer']['uuid'],
+          'token' => $refresh_token['RefreshToken']['token'],
+          'grant_type' => 'refresh_token'
+        );
+
+        $hash_map = implode(',', array_keys($data));
+        $data['hash'] = $this->__hash(Configure::read('PlatinMarket.ClientID'), Configure::read('PlatinMarket.ClientSecret'), $data);
+        $data['hash-map'] = $hash_map;
+        $data['application_uuid'] = Configure::read('PlatinMarket.ApplicationUUID');
+        $data['time'] = CakeTime::toRSS(new DateTime(), 'Europe/Istanbul');
+
+        // Make Request
+        $HttpSocket = new HttpSocket();
+        $response = $HttpSocket->get($action, $data);
+
+        // Check Response
+        if ($response->code != 200)
+        {
+          try { $response_msg = json_decode($response->body, true); } catch (Exception $err) { $response_msg = $response->body; }
+          if ($this->Customer->RefreshToken->delete($refresh_token['RefreshToken']['id']))
+            $this->redirect();
+          throw new Exception("Request for 'access_token' from 'refresh_token' failed. " . $response_msg['message'], $response->code);
+        }
+
+        // Parse Response
+        try
+        {
+          $response_data = json_decode($response->body, true);
+          $response_data = $response_data['result'];
+          extract($response_data);
+        }
+        catch (Exception $err)
+        {
+          throw new Exception("Parse failed get 'access_token' from 'refresh_token' failed", $response->code);
+        }
+
+        // Save Tokens
+        // Prepare Data
+        $access_token = array('AccessToken' => array(
+          'token' => $access_token,
+          'lifetime' => $access_token_lifetime,
+          'customer_id' => $this->customer_data['Customer']['id']
+        ));
+
+        // Delete Old Access Token
+        $this->Customer->AccessToken->deleteAll(array('AccessToken.customer_id' => $this->customer_data['Customer']['id']));
+
+        // Save Access Token
+        $this->Customer->AccessToken->create();
+        if (!$this->Customer->AccessToken->save($access_token))
+          throw new Exception("AccessToken create failed");
+
+        // Prepare Data
+        $refresh_token = array('RefreshToken' => array(
+          'token' => $refresh_token,
+          'lifetime' => $refresh_token_lifetime,
+          'customer_id' => $this->customer_data['Customer']['id']
+        ));
+
+        // Delete Old Refresh Token
+        $this->Customer->RefreshToken->deleteAll(array('RefreshToken.customer_id' => $this->customer_data['Customer']['id']));
+
+        // Save Refresh Token
+        $this->Customer->RefreshToken->create();
+        if (!$this->Customer->RefreshToken->save($refresh_token))
+          throw new Exception("RefreshToken create failed");
+
+        return $access_token['AccessToken']['token'];
       }
 
-      // Has AuthCode?
-      if ($auth_code = $this->__has_token("RefreshToken", $this->customer_data['Customer']['id']))
-      {
-        // Call Access Token
-
-      }
     }
 
     // Send to authorize
@@ -69,20 +156,15 @@ class AppController extends Controller
 
   private function __has_token($type = "AccessToken", $customer_id) {
     $this->loadModel($type);
-    $conditions = array('NOW() BETWEEN SUBDATE(created, INTERVAL 1 SECOND) AND ADDDATE(created, INTERVAL lifetime MINUTE) OR lifetime = -1', 'customer_id' => $customer_id);
-    $order = 'created DESC';
+    $conditions = array('NOW() BETWEEN SUBDATE(' . $type . '.created, INTERVAL 1 SECOND) AND ADDDATE(' . $type . '.created, INTERVAL ' . $type . '.lifetime MINUTE) OR lifetime = -1', 'customer_id' => $customer_id);
+    $order = $type . '.created DESC';
     if (!empty($token = $this->{$type}->find('first', compact('conditions', 'order')))) return $token;
-    return $false;
+    return false;
   }
 
-  // Init Customer Data
-  private function __init_customer_data()
+  // Check Config Data
+  protected function __init_config()
   {
-    if (empty($this->session_id)) $this->session_id = isset($this->params->data['session_id']) ? $this->params->data['session_id'] : null;
-    if (empty($this->session_id)) $this->session_id = isset($this->params->query['session_id']) ? $this->params->query['session_id'] : null;
-    if (empty($this->session_id)) $this->session_id = !empty($this->params->session_id) ? $this->params->session_id : null;
-    if (empty($this->session_id)) throw new BadRequestException("Session id required");
-
     if (
         empty(Configure::read("PlatinMarket.ClientID")) ||
         empty(Configure::read("PlatinMarket.ClientSecret")) ||
@@ -93,14 +175,27 @@ class AppController extends Controller
         empty(Configure::read("PlatinMarket.OAuth"))
       )
         throw new Exception("Config error");
+  }
 
-    // Check Already set
-    if (!empty($this->customer_data) || $this->params->controller == 'install') return;
+  // Init Session Data
+  protected function __init_session()
+  {
+    if (empty($this->session_id)) $this->session_id = isset($this->params->data['session_id']) ? $this->params->data['session_id'] : null;
+    if (empty($this->session_id)) $this->session_id = isset($this->params->query['session_id']) ? $this->params->query['session_id'] : null;
+    if (empty($this->session_id)) $this->session_id = !empty($this->params->session_id) ? $this->params->session_id : null;
+    if (empty($this->session_id)) throw new BadRequestException("Session id required");
+  }
+
+  // Init Customer Data
+  private function __init_customer_data()
+  {
+    // Return if already set or at during install
+    if (!empty($this->customer_data)) return;
 
     // Check Params Page -> Page
-    if (!empty($this->session_id) && !empty($this->Session->read($this->session_id)))
+    if (!empty($this->session_id) && !empty($this->Session->read('session_map.' . $this->session_id)))
     {
-      $this->customer_data = ClassRegistry::init('Customer')->findById($this->session_id);
+      $this->customer_data = ClassRegistry::init('Customer')->findByUuid($this->Session->read('session_map.' . $this->session_id));
       return;
     }
     elseif (!empty($this->params->customer_id)) // Check customer_id already set probably 404
@@ -122,6 +217,9 @@ class AppController extends Controller
         throw new UnauthorizedException("Missing post parameters");
     else
       extract($this->request->data);
+
+    // Write Session -> CustomerUUID Map
+    $this->Session->write('session_map.' . $this->session_id, $customer_uuid);
 
     // Check Hash
     if ($hash != $this->__hash(Configure::read("PlatinMarket.ClientID"), Configure::read("PlatinMarket.ClientSecret"), array($command, $customer_uuid, $platform_uuid, $success_url, $fail_url)))
