@@ -1,0 +1,12 @@
+{
+    "name": "root/setrow-entegrasyon",
+    "authors": [
+        {
+            "name": "Burak Doğan",
+            "email": "bdogan85@gmail.com"
+        }
+    ],
+    "require": {
+        "slywalker/boost_cake": "*"
+    }
+}
