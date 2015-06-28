@@ -80,10 +80,11 @@ App::build(array(
 // BoostCake
 CakePlugin::load('BoostCake');
 
+// SetrowApi
+CakePlugin::load(array('Setrow' => array('bootstrap' => true)));
+
 // ReformApi
-CakePlugin::load('ReformApi');
-
-
+CakePlugin::load(array('ReformApi' => array('bootstrap' => true)));
 
 /**
  * To prefer app translation over plugin translation, you can set

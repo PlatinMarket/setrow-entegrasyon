@@ -14,7 +14,8 @@ class InstallController extends AppController
   // Index
   public function index()
   {
-
+    
+    //if (!empty($this->request->data))
   }
 
 }

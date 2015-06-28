@@ -1,4 +1,4 @@
-<?php echo $this->Form->create('BoostCake', array(
+<?php echo $this->Form->create('Setrow', array(
 	'inputDefaults' => array(
 		'div' => 'form-group',
 		'wrapInput' => false,
@@ -8,7 +8,8 @@
 )); ?>
 	<fieldset>
 		<legend><?php echo __("Setrow entegrasyonu kurulumu"); ?></legend>
-		<?php echo $this->Form->input('text', array(
+		<?php echo $this->Form->input('Setrow.customer_id', array('value' => $customer_data['Customer']['id'], 'type' => 'hidden')); ?>
+		<?php echo $this->Form->input('Setrow.api_key', array(
 			'label' => 'Setrow api anahtarı',
 			'after' => '<span class="help-block">* Setrow paneli > Gönderim Ayarları > API Key</span>'
 		)); ?>
