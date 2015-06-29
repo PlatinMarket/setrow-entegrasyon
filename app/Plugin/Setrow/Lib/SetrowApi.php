@@ -8,14 +8,27 @@ class SetrowApi
 
     // Connection Properties
     private $_url = array(
-      'protocol' => 'https:',
-      'host' => 'api.setrow.com',
-      'path' => 'V1/api.php'
+      'api' => array(
+        'protocol' => 'http:',
+        'host' => 'api.setrow.com',
+        'path' => 'V1/api.php'
+      ),
+      'product_api' => array(
+        'protocol' => 'http:',
+        'host' => 'api.setrow.com',
+        'path' => 'V1/PRODUCT_API.php'
+      ),
+      'shopping_cart' => array(
+        'protocol' => 'http:',
+        'host' => 'api.setrow.com',
+        'path' => 'V1/SHOPPING_CARD_API_V2.php'
+      )
     );
     // Get Connection Url
-    private function __connect()
+    private function __connect($_alias = 'api')
     {
-      return $this->_url['protocol'] . '//' . $this->_url['host'] . '/' . $this->_url['path'];
+      $_url = $this->_url[$alias];
+      return $_url['protocol'] . '//' . $_url['host'] . '/' . $_url['path'];
     }
 
     // Config Set
@@ -37,5 +50,10 @@ class SetrowApi
       if (!is_array($queryData)) $queryData = array();
       $result = $HttpSocket->get($this->__connect(), $queryData);
       return $result;
+    }
+
+    public function checkApiKey()
+    {
+        $response = $this->__sendRequest(array(''))
     }
 }
