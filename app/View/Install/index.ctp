@@ -8,6 +8,7 @@
 )); ?>
 	<fieldset>
 		<legend><?php echo __("Setrow entegrasyonu kurulumu"); ?></legend>
+		<?php echo $this->Form->input('Setrow.id', array('type' => 'hidden')); ?>
 		<?php echo $this->Form->input('Setrow.customer_id', array('value' => $customer_data['Customer']['id'], 'type' => 'hidden')); ?>
 		<?php echo $this->Form->input('Setrow.api_key', array(
 			'label' => 'Setrow api anahtarı',
