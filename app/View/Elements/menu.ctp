@@ -9,7 +9,6 @@
       <ul class="nav navbar-nav navbar-right">
         <?php if (isset($customer_data["Customer"]["is_installed"]) && $customer_data["Customer"]["is_installed"] == 1) { ?>
           <li><?php echo $this->Html->link('<i class="fa fa-clock-o"></i> Günlük', array('session_id' => $session_id, 'controller' => 'log', 'action' => 'index'), array('escape' => false)) ?></li>
-          <li><?php echo $this->Html->link('<i class="fa fa-random"></i> Üye Eşle', array('session_id' => $session_id, 'controller' => 'user_mapper', 'action' => 'index'), array('escape' => false)) ?></li>
           <li><?php echo $this->Html->link('<i class="fa fa-sliders"></i> Ayarlar', array('session_id' => $session_id, 'controller' => 'config', 'action' => 'settings'), array('escape' => false)) ?></li>
         <?php } ?>
       </ul>
