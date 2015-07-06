@@ -7,9 +7,9 @@ CREATE TABLE `access_tokens` (
   `lifetime` int(11) NOT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-INSERT INTO access_tokens VALUES (1,'4a54b0e206e3ae2616f2e688784f353bf3bc43a0',1,3600,'2015-06-27 01:50:14');
+INSERT INTO access_tokens VALUES (3,'285ccac022335ee75da9ba9d63e54ca6cb3db2cf',1,-1,'2015-07-06 19:44:13');
 
 
 
@@ -26,9 +26,28 @@ CREATE TABLE `customers` (
   `created` datetime NOT NULL,
   `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-INSERT INTO customers VALUES (1,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',0,0,'2015-06-27 01:50:14','2015-06-27 01:50:14');
+INSERT INTO customers VALUES (1,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',1,0,'2015-07-02 13:59:10','2015-07-02 15:46:19');
+INSERT INTO customers VALUES (2,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',0,0,'2015-07-06 19:33:59','2015-07-06 19:33:59');
+INSERT INTO customers VALUES (3,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',0,0,'2015-07-06 19:34:06','2015-07-06 19:34:06');
+
+
+
+DROP TABLE IF EXISTS `filters`;
+
+CREATE TABLE `filters` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) NOT NULL DEFAULT '',
+  `query` text NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `modified` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+INSERT INTO filters VALUES (1,'test global','',NULL,NULL,NULL);
+INSERT INTO filters VALUES (2,'test cust','',1,NULL,NULL);
 
 
 
@@ -41,9 +60,9 @@ CREATE TABLE `refresh_tokens` (
   `lifetime` int(11) NOT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-INSERT INTO refresh_tokens VALUES (1,'702917b6a93309572258e9a2d343e5cdf3a3d696',1,1206900,'2015-06-27 01:50:14');
+INSERT INTO refresh_tokens VALUES (3,'1f9c4ef44b5d7f87b447a762c5f6876d60abe4fa',1,1206900,'2015-07-06 19:44:13');
 
 
 
@@ -56,8 +75,9 @@ CREATE TABLE `setrow` (
   `created` datetime NOT NULL,
   `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
+INSERT INTO setrow VALUES (1,1,'ueoJuCbU7tVkN0lhRBNx343TqxbgbofB612DVXXxdQrQZ3ertg','2015-07-02 15:39:58','2015-07-02 15:46:19');
 
 
 

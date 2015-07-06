@@ -65,7 +65,6 @@ class SetrowApi
 
       if ($response->getHeader('Content-Type') != 'text/xml')
       {
-          $response_arr['result'] = 'error';
           throw new SetrowApiException(array('url' => $url, 'response_body' => $response->body(), 'response_headers' => $response->headers, 'query' => $queryData));
       }
 

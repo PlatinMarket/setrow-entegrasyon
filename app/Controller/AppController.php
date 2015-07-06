@@ -96,8 +96,7 @@ class AppController extends Controller
         if ($response->code != 200)
         {
           try { $response_msg = json_decode($response->body, true); } catch (Exception $err) { $response_msg = $response->body; }
-          if ($this->Customer->RefreshToken->delete($refresh_token['RefreshToken']['id']))
-            $this->redirect();
+          if ($this->Customer->RefreshToken->delete($refresh_token['RefreshToken']['id'])) $this->redirect('/');
           throw new Exception("Request for 'access_token' from 'refresh_token' failed. " . $response_msg['message'], $response->code);
         }
 
