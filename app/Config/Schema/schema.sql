@@ -39,15 +39,29 @@ DROP TABLE IF EXISTS `filters`;
 CREATE TABLE `filters` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `label` varchar(45) NOT NULL DEFAULT '',
+  `remote` varchar(45) DEFAULT NULL,
   `query` text NOT NULL,
   `customer_id` int(11) DEFAULT NULL,
-  `created` datetime DEFAULT NULL,
-  `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
-INSERT INTO filters VALUES (1,'test global','',NULL,NULL,NULL);
-INSERT INTO filters VALUES (2,'test cust','',1,NULL,NULL);
+INSERT INTO filters VALUES (1,'Bayan Kullanıcılar','Member','a:1:{s:17:\"Member.member_SEX\";i:2;}',NULL);
+INSERT INTO filters VALUES (2,'Erkek Kullanıcılar','Member','a:1:{s:17:\"Member.member_SEX\";i:1;}',NULL);
+
+
+
+DROP TABLE IF EXISTS `member_mappers`;
+
+CREATE TABLE `member_mappers` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `grupid` int(11) NOT NULL,
+  `filter_id` int(11) NOT NULL,
+  `created` datetime DEFAULT NULL,
+  `modified` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
 
 
 
@@ -77,7 +91,4 @@ CREATE TABLE `setrow` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO setrow VALUES (1,1,'ueoJuCbU7tVkN0lhRBNx343TqxbgbofB612DVXXxdQrQZ3ertg','2015-07-02 15:39:58','2015-07-02 15:46:19');
-
-
-
+INSERT INTO setrow VALUES (1,1,'ueoJuCbU7tVkN0lhRBNx343TqxbgbofB612DVXXxdQrQZ3ertg','2015-07-02 15:39:58','2015-07-07 18:23:09');

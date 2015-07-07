@@ -1,23 +1,60 @@
 <div class="col col-xs-12">
   <?php echo $this->Form->create('Setrow', array(
-  	'inputDefaults' => array(
+    'inputDefaults' => array(
   		'div' => 'form-group',
+  		'label' => false,
   		'wrapInput' => false,
   		'class' => 'form-control'
-  	)
+  	),
+  	'class' => 'form-inline'
   )); ?>
-  	<fieldset>
+
+    <fieldset>
   		<legend><?php echo __("Setrow Api Anahtarı"); ?></legend>
-  		<?php echo $this->Form->input('Setrow.id', array('type' => 'hidden')); ?>
-  		<?php echo $this->Form->input('Setrow.customer_id', array('value' => $customer_data['Customer']['id'], 'type' => 'hidden')); ?>
-  		<?php echo $this->Form->input('Setrow.api_key', array(
-  			'label' => 'Setrow api anahtarı',
-  			'after' => '<span class="help-block">* Setrow paneli > Gönderim Ayarları > API Key</span>'
-  		)); ?>
-  		<?php echo $this->Form->submit('Kaydet', array(
-  			'div' => 'form-group',
-  			'class' => 'btn btn-success'
-  		)); ?>
+    		<?php echo $this->Form->input('Setrow.id', array('type' => 'hidden')); ?>
+    		<?php echo $this->Form->input('Setrow.customer_id', array('value' => $customer_data['Customer']['id'], 'type' => 'hidden')); ?>
+    		<?php echo $this->Form->input('Setrow.api_key', array(
+    			'placeholder' => 'Setrow api anahtarı',
+          'style' => 'width:100%',
+          'div' => array('style' => 'width:100%'),
+    			'after' => '<span class="help-block">* Setrow paneli > Gönderim Ayarları > API Key</span>'
+    		)); ?>
   	</fieldset>
+
+    <fieldset style="margin-top:20px;">
+  		<legend><?php echo __("Üye Ayarları"); ?></legend>
+      <?php
+        $syncRecordCursor = 0;
+        foreach ($this->request->data['MemberMapper'] as $key => $syncRecord)
+        {
+          if (!isset($syncRecord['id']) || empty($syncRecord['id'])) continue;
+      ?>
+          <div class="form-group" style="width:100%;margin-bottom:10px;">
+        		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.id', array('type' => 'hidden')); ?>
+        		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.customer_id', array('value' => $customer_data['Customer']['id'], 'type' => 'hidden')); ?>
+        		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.filter_id', array('label' => array('text' => 'E-Store: ', 'style' => 'margin-right:10px;'), 'style' => 'min-width:100px;')); ?>
+        		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.grupid', array('label' => array('text' => 'Setrow grup: ', 'style' => 'margin-left:10px;margin-right:10px;'), 'style' => 'min-width:100px;', 'options' => $grup_listesi, 'escape' => false)); ?>
+        		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.delete', array('label' => array('text' => 'Sil', 'style' => 'margin-left:10px;margin-right:10px;'), 'type' => 'checkbox', 'class' => false, 'div' => 'checkbox')); ?>
+          </div>
+      <?php
+          $syncRecordCursor++;
+        }
+      ?>
+      <div class="form-group" style="width:100%;">
+    		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.customer_id', array('value' => $customer_data['Customer']['id'], 'type' => 'hidden')); ?>
+    		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.filter_id', array('label' => array('text' => 'E-Store: ', 'style' => 'margin-right:10px;'), 'style' => 'min-width:100px;', 'empty' => 'Seçiniz', 'required' => false)); ?>
+    		<?php echo $this->Form->input('MemberMapper.' . $syncRecordCursor . '.grupid', array('label' => array('text' => 'Setrow grup: ', 'style' => 'margin-left:10px;margin-right:10px;'), 'style' => 'min-width:100px;', 'options' => $grup_listesi, 'escape' => false, 'empty' => 'Seçiniz', 'required' => false)); ?>
+      </div>
+  	</fieldset>
+
+    <div class="form-group" style="width:100%;margin-top:20px;">
+      <hr size="1" />
+      <?php echo $this->Form->submit('Kaydet', array(
+        'div' => false,
+        'class' => 'btn btn-success'
+      )); ?>
+      <span style="margin-left:5px;margin-right:5px;">veya</span>
+      <?php echo $this->Html->link('İptal et', array('session_id' => $session_id, 'plugin' => null, 'controller' => 'log', 'action' => 'index')); ?>
+    </div>
   <?php echo $this->Form->end(); ?>
 </div>
