@@ -48,6 +48,9 @@ class AppController extends Controller
     // Init Customer Data
     $this->__init_customer_data();
 
+    // Init Log File
+    $this->__init_log_files();
+
     // Get AccessToken
     $this->__init_access_token();
 
@@ -55,6 +58,30 @@ class AppController extends Controller
     if ($this->params->controller != "install" && (empty($this->customer_data) || $this->customer_data['Customer']['is_installed'] == 0))
       return $this->redirect(array("plugin" => null, "controller" => "install", "action" => "index", "session_id" => $this->session_id));
 
+  }
+
+  private function __init_log_files()
+  {
+    if (!empty($this->customer_data))
+    {
+      $this->customer_id = $this->customer_data['Customer']['id'];
+      // Sync Log Config
+      CakeLog::config('sync', array(
+        'engine' => 'File',
+        'types' => array('sync'),
+        'file' => 'sync_' . $this->customer_id,
+      ));
+      CakeLog::config('sync_debug', array(
+        'engine' => 'File',
+        'types' => array('sync_debug'),
+        'file' => 'sync_debug_' . $this->customer_id,
+      ));
+      CakeLog::config('sync_error', array(
+        'engine' => 'File',
+        'types' => array('sync_error'),
+        'file' => 'sync_error_ ' . $this->customer_id,
+      ));
+    }
   }
 
   private function __init_access_token()
@@ -226,6 +253,7 @@ class AppController extends Controller
 
     // Get Data
     $this->customer_data = ClassRegistry::init('Customer')->findByUuid($customer_uuid);
+
   }
 
   protected function __hash($clientId, $clientSecret, $data, $enc = 'sha256') {

@@ -26,13 +26,33 @@ class ConfigController extends AppController
     {
       $allSaved = $this->Setrow->save($this->request->data);
       $allSaved = $this->Setrow->Customer->MemberMapper->saveAllModified($this->request->data);
+      if ($allSaved = $this->Setrow->Customer->SyncConfig->save($this->request->data))
+      {
+        if ($this->customer_data['SyncConfig']['active'] != $this->request->data['SyncConfig']['active'])
+        {
+          $logMessage = 'Sistem kapatıldı';
+          if ($this->request->data['SyncConfig']['active']) $logMessage = 'Sistem açıldı';
+          CakeLog::write('sync', $logMessage);
+        }
+        if ($this->customer_data['SyncConfig']['period'] != $this->request->data['SyncConfig']['period'])
+        {
+          $logMessage = 'Periyot ' . $this->request->data['SyncConfig']['period'] . ' dk olarak değiştirildi';
+          CakeLog::write('sync', $logMessage);
+        }
+      }
 
       if ($allSaved)
         $this->Session->setFlash('<strong>Ayarlar kaydedildi</strong>', 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
       else
       {
         $errorStr = "";
+
+        if (isset($this->Setrow->Customer->MemberMapper->validationErrors[1])) $this->Setrow->Customer->MemberMapper->validationErrors = $this->Setrow->Customer->MemberMapper->validationErrors[1];
         foreach ($this->Setrow->Customer->MemberMapper->validationErrors as $key => $errors) $errorStr .= "<br />" . implode(',', $errors);
+
+        if (isset($this->Setrow->Customer->SyncConfig->validationErrors[1])) $this->Setrow->Customer->SyncConfig->validationErrors = $this->Setrow->Customer->SyncConfig->validationErrors[1];
+        foreach ($this->Setrow->Customer->SyncConfig->validationErrors as $key => $errors) $errorStr .= "<br />" . implode(',', $errors);
+
         $this->Session->setFlash('<strong>Ayarlar kaydedilemedi</strong>' . $errorStr, 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-danger'));
       }
 

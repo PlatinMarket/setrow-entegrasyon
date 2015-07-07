@@ -26,12 +26,17 @@ class MemberMapper extends AppModel
       'notempty' => array(
         'rule' => array('notempty'),
         'message' => 'Setrow grup boş bırakılmaz',
-        'allowEmpty' => false
+        'allowEmpty' => false,
+        'last' =>  true
+      ),
+      'unique' => array(
+        'rule' => array('isUnique', array('grupid', 'filter_id', 'customer_id'), false),
+        'message' => 'Bu `E-Store` ve `Setrow Grup` kombinasyonu daha önce kullanıldı'
       )
     )
   );
 
-  public function saveAllModified($data = array())
+  public function saveAllModified(&$data = array())
   {
     $allSaved = true;
     if (isset($data['MemberMapper']) && is_array($data['MemberMapper']) && !empty(isset($data['MemberMapper'])))
@@ -45,7 +50,13 @@ class MemberMapper extends AppModel
         }
       }
       $data['MemberMapper'] = array_values($data['MemberMapper']);
-      $allSaved = $this->saveMany($data['MemberMapper']);
+      if (!empty($data['MemberMapper']))
+      {
+          if (!($allSaved = $this->saveMany($data['MemberMapper'])))
+          {
+            $data['MemberMapper'] = Hash::extract($this->find('all', array('conditions' => array('MemberMapper.customer_id' => $data['MemberMapper'][0]['customer_id']), 'recursive' => -1)), '{n}.MemberMapper');
+          }
+      }
       if (!empty(Hash::get($memberMapper, 'MemberMapper.filter_id')) || !empty(Hash::get($memberMapper, 'MemberMapper.grupid')))
       {
         $this->create();

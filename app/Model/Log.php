@@ -4,6 +4,7 @@ App::uses('AppModel', 'Model');
 
 class Log extends AppModel
 {
+	public $useTable = false;
 
 	/**
 	 * Returns the character position for a specific occurrence in a string
@@ -31,6 +32,7 @@ class Log extends AppModel
 	public function parse($filename, $limit = 250){
 
 		$filename = LOGS.$filename;
+		if (!file_exists($filename)) return array();
 
 		$file = fopen($filename, 'r');
 

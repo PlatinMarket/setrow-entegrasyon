@@ -24,5 +24,5 @@ class Setrow extends AppModel
       )
     )
   );
-  
+
 }

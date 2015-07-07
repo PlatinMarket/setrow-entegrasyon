@@ -14,7 +14,6 @@ class DbShell extends AppShell {
 
     $model = $this->uses[0];
     $tables = Hash::extract($this->{$model}->query('SHOW TABLES'), "{n}.TABLE_NAMES.Tables_in_setrow");
-    print_r($tables);
     $return = "";
 
     foreach($tables as $table) {

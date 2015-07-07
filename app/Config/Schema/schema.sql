@@ -29,8 +29,6 @@ CREATE TABLE `customers` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 INSERT INTO customers VALUES (1,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',1,0,'2015-07-02 13:59:10','2015-07-02 15:46:19');
-INSERT INTO customers VALUES (2,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',0,0,'2015-07-06 19:33:59','2015-07-06 19:33:59');
-INSERT INTO customers VALUES (3,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',0,0,'2015-07-06 19:34:06','2015-07-06 19:34:06');
 
 
 
@@ -43,10 +41,11 @@ CREATE TABLE `filters` (
   `query` text NOT NULL,
   `customer_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 INSERT INTO filters VALUES (1,'Bayan Kullanıcılar','Member','a:1:{s:17:\"Member.member_SEX\";i:2;}',NULL);
 INSERT INTO filters VALUES (2,'Erkek Kullanıcılar','Member','a:1:{s:17:\"Member.member_SEX\";i:1;}',NULL);
+INSERT INTO filters VALUES (3,'Tüm Kullanıcılar','Member','a:0:{}',NULL);
 
 
 
@@ -60,8 +59,9 @@ CREATE TABLE `member_mappers` (
   `created` datetime DEFAULT NULL,
   `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 
+INSERT INTO member_mappers VALUES (23,1,7286,1,'2015-07-07 23:52:27','2015-07-07 23:59:10');
 
 
 
@@ -91,4 +91,23 @@ CREATE TABLE `setrow` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO setrow VALUES (1,1,'ueoJuCbU7tVkN0lhRBNx343TqxbgbofB612DVXXxdQrQZ3ertg','2015-07-02 15:39:58','2015-07-07 18:23:09');
+INSERT INTO setrow VALUES (1,1,'ueoJuCbU7tVkN0lhRBNx343TqxbgbofB612DVXXxdQrQZ3ertg','2015-07-02 15:39:58','2015-07-07 23:59:10');
+
+
+
+DROP TABLE IF EXISTS `sync_config`;
+
+CREATE TABLE `sync_config` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `period` int(11) NOT NULL DEFAULT '1',
+  `customer_id` int(11) NOT NULL,
+  `created` datetime DEFAULT NULL,
+  `modified` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+INSERT INTO sync_config VALUES (1,1,5,1,'2015-07-07 23:15:03','2015-07-07 23:59:10');
+
+
+

@@ -128,20 +128,3 @@ CakeLog::config('error', array(
 	'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
 	'file' => 'error',
 ));
-
-// Sync Log Config
-CakeLog::config('sync', array(
-	'engine' => 'File',
-	'types' => array('sync'),
-	'file' => 'sync',
-));
-CakeLog::config('sync_debug', array(
-	'engine' => 'File',
-	'types' => array('sync_debug'),
-	'file' => 'sync_debug',
-));
-CakeLog::config('sync_error', array(
-	'engine' => 'File',
-	'types' => array('sync_error'),
-	'file' => 'sync_error',
-));
