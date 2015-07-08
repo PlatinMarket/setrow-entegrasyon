@@ -28,7 +28,7 @@ CREATE TABLE `customers` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-INSERT INTO customers VALUES (1,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',1,0,'2015-07-02 13:59:10','2015-07-02 15:46:19');
+INSERT INTO customers VALUES (1,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',1,1,'2015-07-02 13:59:10','2015-07-02 15:46:19');
 
 
 
@@ -59,9 +59,9 @@ CREATE TABLE `member_mappers` (
   `created` datetime DEFAULT NULL,
   `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
-INSERT INTO member_mappers VALUES (23,1,7286,1,'2015-07-07 23:52:27','2015-07-07 23:59:10');
+INSERT INTO member_mappers VALUES (24,1,24089,3,'2015-07-08 10:55:20','2015-07-08 18:11:55');
 
 
 
@@ -91,7 +91,7 @@ CREATE TABLE `setrow` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO setrow VALUES (1,1,'ueoJuCbU7tVkN0lhRBNx343TqxbgbofB612DVXXxdQrQZ3ertg','2015-07-02 15:39:58','2015-07-07 23:59:10');
+INSERT INTO setrow VALUES (1,1,'ueoJuCbU7tVkN0lhRBNx343TqxbgbofB612DVXXxdQrQZ3ertg','2015-07-02 15:39:58','2015-07-08 18:11:55');
 
 
 
@@ -107,7 +107,27 @@ CREATE TABLE `sync_config` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO sync_config VALUES (1,1,5,1,'2015-07-07 23:15:03','2015-07-07 23:59:10');
+INSERT INTO sync_config VALUES (1,1,5,1,'2015-07-07 23:15:03','2015-07-08 18:11:55');
+
+
+
+DROP TABLE IF EXISTS `sync_track`;
+
+CREATE TABLE `sync_track` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `alias` varchar(45) NOT NULL DEFAULT '',
+  `last_created` datetime DEFAULT NULL,
+  `last_modified` datetime DEFAULT NULL,
+  `last_try` datetime DEFAULT NULL,
+  `last_success` datetime DEFAULT NULL,
+  `last_error` datetime DEFAULT NULL,
+  `last_message` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+INSERT INTO sync_track VALUES (1,1,'Member:Filter:3','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','');
+INSERT INTO sync_track VALUES (2,1,'Member:Filter:1','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','');
 
 
 

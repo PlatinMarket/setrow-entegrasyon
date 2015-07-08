@@ -12,7 +12,7 @@ class SyncConfig extends AppModel
     'active' => array(
       'boolean' => array(
         'rule' => array('boolean'),
-        'message' => 'Doğru / Yanlı olabilir',
+        'message' => 'Yanlızca Doğru / Yanlış olabilir',
         'allowEmpty' => false
       )
     ),

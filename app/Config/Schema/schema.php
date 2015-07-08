@@ -98,4 +98,20 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
+	public $sync_track = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => true, 'key' => 'primary'),
+		'customer_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'alias' => array('type' => 'string', 'null' => false, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'last_created' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'last_modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'last_try' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'last_success' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'last_error' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'last_message' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+
 }
