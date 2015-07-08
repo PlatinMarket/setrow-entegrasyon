@@ -1,0 +1,30 @@
+<?php
+
+// Client Id
+Configure::write('PlatinMarket.ClientID', '');
+
+// Client Secret
+Configure::write('PlatinMarket.ClientSecret', '');
+
+// Application UUID
+Configure::write('PlatinMarket.ApplicationUUID', '');
+
+// Platform UUID
+Configure::write('PlatinMarket.PlatformUUID', '');
+
+// Application Permission Scope
+Configure::write('PlatinMarket.Scope', '*:*');
+
+// ReformApi Location
+Configure::write('PlatinMarket.Api', array(
+  'protocol' => 'http',
+  'host' => 'developer.platinmarket.com',
+  'path' => '/reform'
+));
+
+// OAuth Location
+Configure::write('PlatinMarket.OAuth', array(
+  'protocol' => 'http',
+  'host' => 'developer.platinmarket.com',
+  'path' => '/oauth/authorize'
+));

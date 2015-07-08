@@ -29,6 +29,14 @@
  * ...and connect the rest of 'Pages' controller's URLs.
  */
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+	Router::connect('/session_start', array('controller' => 'pages', 'action' => 'display'));
+
+	// OAuth Callback
+	Router::connect('/oauth/callback', array('controller' => 'oauth', 'action' => 'callback'));
+
+	// SessionId
+	Router::connect('/:session_id/:controller/:action', array(), array('session_id' => '[a-z|A-Z|0-9]+'));
+	Router::connect('/:session_id/:controller', array('action' => 'index'), array('session_id' => '[a-z|A-Z|0-9]+'));
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on

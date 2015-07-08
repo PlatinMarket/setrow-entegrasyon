@@ -22,6 +22,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+// Call Config
+require_once 'config.php';
+
 // Setup a 'default' cache configuration for use in the application.
 Cache::config('default', array('engine' => 'File'));
 
@@ -74,7 +77,14 @@ App::build(array(
  *
  */
 
+// BoostCake
 CakePlugin::load('BoostCake');
+
+// SetrowApi
+CakePlugin::load(array('Setrow' => array('bootstrap' => true)));
+
+// ReformApi
+CakePlugin::load(array('ReformApi' => array('bootstrap' => true)));
 
 /**
  * To prefer app translation over plugin translation, you can set
