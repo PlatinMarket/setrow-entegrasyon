@@ -7,6 +7,10 @@ class MemberMapper extends AppModel
 
   public $belongsTo = array('Customer', 'Filter');
 
+  public $hasMany = array(
+    'BadMember' => array('dependent' => true)
+  );
+
   public $validate = array(
     'customer_id' => array(
       'notempty' => array(

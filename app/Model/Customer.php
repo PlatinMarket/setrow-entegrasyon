@@ -16,7 +16,8 @@ class Customer extends AppModel
     'RefreshToken' => array('dependent' => true),
     'Filter' => array('dependent' => true),
     'MemberMapper' => array('dependent' => true),
-    'SyncTrack' => array('dependent' => true)
+    'SyncTrack' => array('dependent' => true),
+    'BadMember' => array('dependent' => true)
   );
 
   public function afterFind($results, $primary = false)
