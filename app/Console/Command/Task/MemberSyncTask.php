@@ -154,7 +154,8 @@ class MemberSyncTask extends Shell
             {
               $grupid = Hash::get($memberMapper, 'grupid');
               $response = $s->adres_ekle(array_merge(array('grupid' => $grupid), $this->__prepareMemberData($new_member)));
-              if (Hash::get($response, 'result') == 'error')
+              $resultCode = Hash::get($response, 'data.code');
+              if (Hash::get($response, 'result') == 'error' && $resultCode >= 4)
               {
                 $errorMsg = Hash::get($response, 'data.msg');
                 $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $response));
@@ -162,9 +163,8 @@ class MemberSyncTask extends Shell
                 $syncHelper->setTrackDate($trackAlias, 'error', (new DateTime('NOW'))->format('Y-m-d H:i:s'), $errorMsg);
                 $this->__addBadMember($new_member, $syncHelper->customer_id, $memberMapper['id'], $errorMsg);
                 $error_members++;
-
               }
-              elseif (Hash::get($response, 'result') == 'success')
+              elseif (Hash::get($response, 'result') == 'success' && $resultCode < 4)
               {
                 $added_members++;
                 $syncHelper->setTrackDate($trackAlias, 'created', (new DateTime(Hash::get($new_member, 'Member.track_insert')))->format('Y-m-d H:i:s'));
@@ -192,7 +192,8 @@ class MemberSyncTask extends Shell
         {
           $errorMsg = $err->getMessage();
           $attr = $err->getAttributes();
-          if (is_string(Hash::get($attr, 'response.data'))) $errorMsg .= ". " . Hash::get($attr, 'response.data');
+          if (is_string(Hash::get($attr, 'response.data'))) $errorMsg .= ". " . Hash::get($attr, 'response.data') . ".";
+          if (is_string(Hash::get($attr, 'response.error.message'))) $errorMsg .= ". " . Hash::get($attr, 'response.error.message') . ".";
           $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $attr));
           $syncHelper->logWithTitle('MemberSync', '`' . $filter['label'] . '` senkronize olurken hata oluştu. ' . $errorMsg);
           $syncHelper->setTrackDate($trackAlias, 'error', (new DateTime('NOW'))->format('Y-m-d H:i:s'), $errorMsg);

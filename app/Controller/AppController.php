@@ -124,7 +124,7 @@ class AppController extends Controller
         {
           try { $response_msg = json_decode($response->body, true); } catch (Exception $err) { $response_msg = $response->body; }
           if ($this->Customer->RefreshToken->delete($refresh_token['RefreshToken']['id'])) $this->redirect('/');
-          throw new Exception("Request for 'access_token' from 'refresh_token' failed. " . $response_msg['message'], $response->code);
+          throw new CakeException("Request for 'access_token' from 'refresh_token' failed. " . $response_msg['message'], $response->code);
         }
 
         // Parse Response
@@ -136,7 +136,7 @@ class AppController extends Controller
         }
         catch (Exception $err)
         {
-          throw new Exception("Parse failed get 'access_token' from 'refresh_token' failed", $response->code);
+          throw new CakeException("Parse failed get 'access_token' from 'refresh_token' failed", $response->code);
         }
 
         // Save Tokens
@@ -153,7 +153,7 @@ class AppController extends Controller
         // Save Access Token
         $this->Customer->AccessToken->create();
         if (!$this->Customer->AccessToken->save($access_token))
-          throw new Exception("AccessToken create failed");
+          throw new CakeException("AccessToken create failed");
 
         // Prepare Data
         $refresh_token = array('RefreshToken' => array(
