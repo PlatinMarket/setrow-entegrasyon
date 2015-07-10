@@ -26,5 +26,5 @@ Configure::write('PlatinMarket.Api', array(
 Configure::write('PlatinMarket.OAuth', array(
   'protocol' => 'http',
   'host' => 'developer.platinmarket.com',
-  'path' => '/oauth/authorize'
+  'path' => '/oauth'
 ));
