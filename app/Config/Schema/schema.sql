@@ -7,9 +7,25 @@ CREATE TABLE `access_tokens` (
   `lifetime` int(11) NOT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
-INSERT INTO access_tokens VALUES (3,'285ccac022335ee75da9ba9d63e54ca6cb3db2cf',1,-1,'2015-07-06 19:44:13');
+INSERT INTO access_tokens VALUES (22,'0b5ffcf709998300bdffd42effe479872e919952',1,3600,'2015-07-09 16:55:04');
+
+
+
+DROP TABLE IF EXISTS `bad_members`;
+
+CREATE TABLE `bad_members` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `member_mapper_id` int(11) NOT NULL,
+  `reason` varchar(200) NOT NULL DEFAULT '',
+  `member_ID` int(11) NOT NULL,
+  `member_EMAIL` varchar(100) NOT NULL DEFAULT '',
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 
@@ -26,7 +42,7 @@ CREATE TABLE `customers` (
   `created` datetime NOT NULL,
   `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 INSERT INTO customers VALUES (1,'bayanpazar.com','5c5392fa-18ef-11e5-88b9-000c29212a08','Burak Doğan','burak@platinmarket.com',1,1,'2015-07-02 13:59:10','2015-07-02 15:46:19');
 
@@ -59,7 +75,7 @@ CREATE TABLE `member_mappers` (
   `created` datetime DEFAULT NULL,
   `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
 INSERT INTO member_mappers VALUES (24,1,24089,3,'2015-07-08 10:55:20','2015-07-08 18:11:55');
 
@@ -74,9 +90,9 @@ CREATE TABLE `refresh_tokens` (
   `lifetime` int(11) NOT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
-INSERT INTO refresh_tokens VALUES (3,'1f9c4ef44b5d7f87b447a762c5f6876d60abe4fa',1,1206900,'2015-07-06 19:44:13');
+INSERT INTO refresh_tokens VALUES (22,'8ab630a55407aae6c16ed44c47a77adb74dd4e1c',1,1206900,'2015-07-09 16:55:04');
 
 
 
@@ -124,10 +140,11 @@ CREATE TABLE `sync_track` (
   `last_error` datetime DEFAULT NULL,
   `last_message` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 INSERT INTO sync_track VALUES (1,1,'Member:Filter:3','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','');
 INSERT INTO sync_track VALUES (2,1,'Member:Filter:1','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','1970-01-01 00:00:01','');
+INSERT INTO sync_track VALUES (3,1,'Member:Filter:3:Mapper:24','1970-01-01 00:00:01','1970-01-01 00:00:01','2015-07-09 16:55:05','1970-01-01 00:00:01','2015-07-09 16:50:06','Reform Api error. Unauthorized.');
 
 
 
