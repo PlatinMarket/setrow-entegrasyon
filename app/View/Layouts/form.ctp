@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var forms = document.getElementsByTagName("form");
       var debugMode = <?php echo (Configure::read('debug') > 0 ? "true" : "false"); ?>;
-      if (forms.length > 0 && (debugMode && confirm("Submit form?", "Debug Mode Detected"))) forms[0].submit();
+      if (forms.length > 0 && (!debugMode || confirm("Submit form?", "Debug Mode Detected"))) forms[0].submit();
     </script>
 </body>
 </html>
