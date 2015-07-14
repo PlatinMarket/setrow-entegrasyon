@@ -10,12 +10,16 @@ class InstallController extends AppController
   public function beforeFilter()
   {
     parent::beforeFilter();
+    if (Hash::get($this->customer_data, 'Customer.is_installed'))
+    {
+      $this->redirect(array('session_id' => $this->session_id, 'controller' => 'config', 'action' => 'index'));
+    }
   }
 
   // Index
   public function index()
   {
-    if (!empty($this->request->data))
+    if (!empty($this->request->data) && isset($this->request->data['Setrow']) && !empty($this->request->data['Setrow']))
     {
       if ($this->Setrow->save($this->request->data))
       {
