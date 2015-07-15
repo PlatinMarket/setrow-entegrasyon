@@ -17,7 +17,8 @@ class Customer extends AppModel
     'Filter' => array('dependent' => true),
     'MemberMapper' => array('dependent' => true),
     'SyncTrack' => array('dependent' => true),
-    'BadMember' => array('dependent' => true)
+    'BadMember' => array('dependent' => true),
+    'BadProduct' => array('dependent' => true)
   );
 
   public function afterFind($results, $primary = false)

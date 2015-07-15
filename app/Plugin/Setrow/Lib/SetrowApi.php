@@ -124,6 +124,7 @@ class SetrowApi
       return $this->__parseErrorMessage($response, $result_map);
     }
 
+
     // Error Parse from map
     private function __parseErrorMessage($response = array(), $result_map)
     {

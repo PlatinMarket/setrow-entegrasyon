@@ -95,14 +95,14 @@ class MemberSyncTask extends Shell
       $syncHelper->logWithTitle('MemberSync', 'Senkronizasyon başladı');
 
       // General Log
-      $syncHelper->log('debug', 'Sync started for customer `' . $syncHelper->get('Customer.domain') . '`');
+      $syncHelper->log('debug', 'MemberSync started for customer `' . $syncHelper->get('Customer.domain') . '`');
 
       // Check If Member Filter
       if (!($filters = $syncHelper->getFilters('Member')))
       {
         $syncHelper->logWithTitle('MemberSync', 'Senkronizasyon bitti. Filitre bulunamadı.');
         $syncHelper->log('debug', '`' . $syncHelper->get('Customer.domain') . '` has no filter');
-        $syncHelper->log('debug', 'Sync end for customer `' . $syncHelper->get('Customer.domain') . '`');
+        $syncHelper->log('debug', 'MemberSync end for customer `' . $syncHelper->get('Customer.domain') . '`');
         continue;
       }
 
@@ -111,7 +111,7 @@ class MemberSyncTask extends Shell
       {
         $syncHelper->logWithTitle('MemberSync', 'Senkronizasyon bitti. Üye eşleşme ayarı bulunamadı.');
         $syncHelper->log('debug', '`' . $syncHelper->get('Customer.domain') . '` has no member filter');
-        $syncHelper->log('debug', 'Sync end for customer `' . $syncHelper->get('Customer.domain') . '`');
+        $syncHelper->log('debug', 'MemberSync end for customer `' . $syncHelper->get('Customer.domain') . '`');
         continue;
       }
 

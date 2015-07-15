@@ -68,126 +68,108 @@ class ProductSyncTask extends Shell
       $syncHelper = new SyncHelper($customer);
 
       // Customer Log
-      $syncHelper->logWithTitle('MemberSync', 'Senkronizasyon başladı');
+      $syncHelper->logWithTitle('ProductSync', 'Senkronizasyon başladı');
 
       // General Log
-      $syncHelper->log('debug', 'Sync started for customer `' . $syncHelper->get('Customer.domain') . '`');
+      $syncHelper->log('debug', 'ProductSync started for customer `' . $syncHelper->get('Customer.domain') . '`');
 
       // Check If Member Filter
-      if (!($filters = $syncHelper->getFilters('Member')))
+      if (!($filters = $syncHelper->getFilters('Product')))
       {
-        $syncHelper->logWithTitle('MemberSync', 'Senkronizasyon bitti. Filitre bulunamadı.');
+        $syncHelper->logWithTitle('ProductSync', 'Senkronizasyon bitti. Filitre bulunamadı.');
         $syncHelper->log('debug', '`' . $syncHelper->get('Customer.domain') . '` has no filter');
-        $syncHelper->log('debug', 'Sync end for customer `' . $syncHelper->get('Customer.domain') . '`');
+        $syncHelper->log('debug', 'ProductSync end for customer `' . $syncHelper->get('Customer.domain') . '`');
         continue;
       }
 
-      // Get If MemberMappers
-      if (!($memberMappers = $syncHelper->get('MemberMapper')))
-      {
-        $syncHelper->logWithTitle('MemberSync', 'Senkronizasyon bitti. Üye eşleşme ayarı bulunamadı.');
-        $syncHelper->log('debug', '`' . $syncHelper->get('Customer.domain') . '` has no member filter');
-        $syncHelper->log('debug', 'Sync end for customer `' . $syncHelper->get('Customer.domain') . '`');
-        continue;
-      }
+      // Get Product Filter
+      $filter = array_filter($filters, function($f) { return !empty($f['customer_id']); });
+      if (empty($filter)) $filter = $filters;
+      $filter = array_pop($filters);
 
       // Set Api Lib
       $s = new SetrowApi($syncHelper->getSetrowApiKey());
       $r = new ReformApi($syncHelper->getReformAccessToken());
 
       // Counters
-      $added_members = 0;
-      $error_members = 0;
+      $added_products = 0;
+      $added_error_products = 0;
+      $updated_products = 0;
+      $updated_error_products = 0;
 
-      // For customer's filters do sync
-      foreach ($memberMappers as $memberMapper)
+      // Choose Filter last
+      $filter = array_pop($filter);
+
+      try
       {
-        if (empty($filter = array_filter($filters, function($f) use ($memberMapper) { return ($memberMapper['filter_id'] === $f['id']); })))
+        // Track Alias
+        $trackAlias = 'Product:Filter:'. $filter['id'];
+        // Checking Created Members
+        $last_member_created = $syncHelper->getTrackDate($trackAlias, 'created');
+        $badProducts = array_filter(Hash::get($customer, 'BadProduct'), function($b) use ($filter) { return $b['filter_id'] == $filter['id']; });
+        $new_products = Hash::get($r->callMembers($this->__prepareOptions('track_insert', $filter['query'], $last_member_created, $badProducts)), 'data');
+        foreach($new_products as $new_product)
         {
-          $errorMsg = 'MemberMapper::' . $memberMapper['id'] . ' not associated with any filter';
-          $syncHelper->log('error', $errorMsg);
-          $syncHelper->logWithTitle('MemberSync', '`MemberMapper::' . $memberMapper['id'] . '` hiç bir filitre ile ilişkilendirilmemiş');
-          continue;
-        }
-
-        // Choose Filter last
-        $filter = array_pop($filter);
-
-        // General Log
-        $syncHelper->log('debug', '`' . $filter['label'] . '` started');
-
-        try
-        {
-          // Track Alias
-          $trackAlias = 'Member:Filter:'. $filter['id'] . ':Mapper:' . $memberMapper['id'];
-          // Checking Created Members
-          $last_member_created = $syncHelper->getTrackDate($trackAlias, 'created');
-          $badMembers = array_filter(Hash::get($customer, 'BadMember'), function($b) use ($memberMapper) { return $b['member_mapper_id'] == $memberMapper['id']; });
-          $new_members = Hash::get($r->callMembers($this->__prepareOptions('track_insert', $filter['query'], $last_member_created, $badMembers)), 'data');
-          foreach($new_members as $new_member)
+          try
           {
-            try
+            $response = $s->adres_ekle(array_merge(array('grupid' => $grupid), $this->__prepareMemberData($new_member)));
+            $resultCode = Hash::get($response, 'data.code');
+            if (Hash::get($response, 'result') == 'error' && $resultCode >= 4)
             {
-              $grupid = Hash::get($memberMapper, 'grupid');
-              $response = $s->adres_ekle(array_merge(array('grupid' => $grupid), $this->__prepareMemberData($new_member)));
-              $resultCode = Hash::get($response, 'data.code');
-              if (Hash::get($response, 'result') == 'error' && $resultCode >= 4)
-              {
-                $errorMsg = Hash::get($response, 'data.msg');
-                $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $response));
-                $syncHelper->logWithTitle('MemberSync', '`' . $filter['label'] . '` senkronize olurken hata oluştu. ' . $errorMsg);
-                $syncHelper->setTrackDate($trackAlias, 'error', (new DateTime('NOW'))->format('Y-m-d H:i:s'), $errorMsg);
-                $this->__addBadMember($new_member, $syncHelper->customer_id, $memberMapper['id'], $errorMsg);
-                $error_members++;
-              }
-              elseif (Hash::get($response, 'result') == 'success' && $resultCode < 4)
-              {
-                $added_members++;
-                $syncHelper->setTrackDate($trackAlias, 'created', (new DateTime(Hash::get($new_member, 'Member.track_insert')))->format('Y-m-d H:i:s'));
-                $syncHelper->setTrackDate($trackAlias, 'success', (new DateTime('NOW'))->format('Y-m-d H:i:s'));
-              }
-            }
-            catch (SetrowApiException $err)
-            {
-              $error_members++;
-              $errorMsg = $err->getMessage();
-              $attr = $err->getAttributes();
-              if (is_string(Hash::get($attr, 'response_body'))) $errorMsg .= ". " . Hash::get($attr, 'response_body');
-              $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $attr));
-              $syncHelper->logWithTitle('MemberSync', '`' . $filter['label'] . '` senkronize olurken hata oluştu. ' . $errorMsg);
+              $errorMsg = Hash::get($response, 'data.msg');
+              $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $response));
+              $syncHelper->logWithTitle('ProductSync', '`' . $filter['label'] . '` senkronize olurken hata oluştu. ' . $errorMsg);
               $syncHelper->setTrackDate($trackAlias, 'error', (new DateTime('NOW'))->format('Y-m-d H:i:s'), $errorMsg);
-              continue;
+              $this->__addBadMember($new_member, $syncHelper->customer_id, $memberMapper['id'], $errorMsg);
+              $error_members++;
             }
-            finally
+            elseif (Hash::get($response, 'result') == 'success' && $resultCode < 4)
             {
-              $syncHelper->setTrackDate($trackAlias, 'try', (new DateTime('NOW'))->format('Y-m-d H:i:s'));
-            } // try catch member add
-          } // foreach member
-        } // general catch
-        catch (ReformApiException $err)
-        {
-          $errorMsg = $err->getMessage();
-          $attr = $err->getAttributes();
-          if (is_string(Hash::get($attr, 'response.data'))) $errorMsg .= ". " . Hash::get($attr, 'response.data') . ".";
-          if (is_string(Hash::get($attr, 'response.error.message'))) $errorMsg .= ". " . Hash::get($attr, 'response.error.message') . ".";
-          $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $attr));
-          $syncHelper->logWithTitle('MemberSync', '`' . $filter['label'] . '` senkronize olurken hata oluştu. ' . $errorMsg);
-          $syncHelper->setTrackDate($trackAlias, 'error', (new DateTime('NOW'))->format('Y-m-d H:i:s'), $errorMsg);
-        }
-        catch (Exception $err)
-        {
-          $errorMsg = $err->getMessage();
-          $syncHelper->log('error', $errorMsg . "\r\n" . $err->getTraceAsString());
-        }
-        finally
-        {
-          // General Log
-          $syncHelper->log('debug', '`' . $filter['label'] . '` ended');
-        }
-      } // foreach mamber mapper
+              $added_members++;
+              $syncHelper->setTrackDate($trackAlias, 'created', (new DateTime(Hash::get($new_member, 'Member.track_insert')))->format('Y-m-d H:i:s'));
+              $syncHelper->setTrackDate($trackAlias, 'success', (new DateTime('NOW'))->format('Y-m-d H:i:s'));
+            }
+          }
+          catch (SetrowApiException $err)
+          {
+            $error_members++;
+            $errorMsg = $err->getMessage();
+            $attr = $err->getAttributes();
+            if (is_string(Hash::get($attr, 'response_body'))) $errorMsg .= ". " . Hash::get($attr, 'response_body');
+            $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $attr));
+            $syncHelper->logWithTitle('ProductSync', '`' . $filter['label'] . '` senkronize olurken hata oluştu. ' . $errorMsg);
+            $syncHelper->setTrackDate($trackAlias, 'error', (new DateTime('NOW'))->format('Y-m-d H:i:s'), $errorMsg);
+            continue;
+          }
+          finally
+          {
+            $syncHelper->setTrackDate($trackAlias, 'try', (new DateTime('NOW'))->format('Y-m-d H:i:s'));
+          } // try catch member add
+        } // foreach member
+      } // general catch
+      catch (ReformApiException $err)
+      {
+        $errorMsg = $err->getMessage();
+        $attr = $err->getAttributes();
+        if (is_string(Hash::get($attr, 'response.data'))) $errorMsg .= ". " . Hash::get($attr, 'response.data') . ".";
+        if (is_string(Hash::get($attr, 'response.error.message'))) $errorMsg .= ". " . Hash::get($attr, 'response.error.message') . ".";
+        $syncHelper->log('error', array('message' => $errorMsg, 'attributes' => $attr));
+        $syncHelper->logWithTitle('ProductSync', '`' . $filter['label'] . '` senkronize olurken hata oluştu. ' . $errorMsg);
+        $syncHelper->setTrackDate($trackAlias, 'error', (new DateTime('NOW'))->format('Y-m-d H:i:s'), $errorMsg);
+      }
+      catch (Exception $err)
+      {
+        $errorMsg = $err->getMessage();
+        $syncHelper->log('error', $errorMsg . "\r\n" . $err->getTraceAsString());
+      }
+      finally
+      {
+        // General Log
+        $syncHelper->log('debug', '`' . $filter['label'] . '` ended');
+      }
 
       // Log
-      $syncHelper->logWithTitle('MemberSync', 'Senkronizasyon bitti. Eklenen: ' . $added_members . ' / Hata Alınan: ' . $error_members );
+      $syncHelper->logWithTitle('ProductSync', 'Senkronizasyon bitti. Eklenen: ' . $added_members . ' / Hata Alınan: ' . $error_members );
       $syncHelper->log('debug', 'Sync end for customer `' . $syncHelper->get('Customer.domain') . '`');
     } // foreach customer
   }
