@@ -1,5 +1,8 @@
 <?php
 
+// Cake Debug Level
+Configure::write('debug', 0);
+
 // Client Id
 Configure::write('PlatinMarket.ClientID', '');
 
