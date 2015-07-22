@@ -19,7 +19,7 @@ class ConfigController extends AppController
     $grup_listesi = Hash::combine($grup_listesi['data'], '{n}.grupid', array('[%s] %s', '{n}.grupid', '{n}.grupadi'));
     $this->set(compact('grup_listesi'));
 
-    $filters = Hash::combine($this->customer_data['Filter'], '{n}.id', '{n}.label');
+    $filters = Hash::combine(array_filter($this->customer_data['Filter'], function($f) { return $f['remote'] == 'Member'; }), '{n}.id', '{n}.label');
     $this->set(compact('filters'));
 
     if (!empty($this->request->data))
